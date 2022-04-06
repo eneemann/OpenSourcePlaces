@@ -591,7 +591,7 @@ def update_sgid():
     #: Report change in feature count
     sgid_count = arcpy.management.GetCount(osplaces_path)[0]
     new_count = arcpy.management.GetCount(combined_places_final)[0]
-    new_rows = sgid_count - new_count
+    new_rows = int(new_count) - int(sgid_count)
     print(f"Current SGID OpenSourcePlaces row count: {sgid_count}")
     print(f"New OpenSourcePlaces row count: {new_count}")
     print(f"Number of new features: {new_rows}")
