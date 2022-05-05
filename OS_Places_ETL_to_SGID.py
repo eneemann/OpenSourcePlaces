@@ -505,7 +505,7 @@ def delete_files():
     for file in list_of_files:
         if file.endswith(".zip"):
             print(f"Deleting {file} ...")
-            os.remove(file)
+            os.remove(os.path.join(work_dir, file))
     
 
 #: Retrieve Overpass API data with requests, convert to dataframe
