@@ -499,7 +499,14 @@ def delete_files():
     for fc in featureclasses:
         print(f"Deleting {fc} ...")
         arcpy.management.Delete(fc)
-
+        
+    #: Remove the OSM .zip file
+    list_of_files = [f for f in os.listdir(work_dir) if os.path.isfile(os.path.join(work_dir, f))]
+    for file in list_of_files:
+        if file.endswith(".zip"):
+            print(f"Deleting {file} ...")
+            os.remove(file)
+    
 
 #: Retrieve Overpass API data with requests, convert to dataframe
 def get_overpass_df(query_string):
