@@ -446,11 +446,17 @@ def calc_fields():
                 
             update_cursor.updateRow(row)
     
-    #: Calculate lon/lat values for all points (WGS84 coords)
+    #: Add fields for lon/lat values
     arcpy.management.AddField(combined_places_simple, 'lon', 'FLOAT', field_scale="6", field_alias="Longitude")
     arcpy.management.AddField(combined_places_simple, 'lat', 'FLOAT', field_scale="6", field_alias="Latitude")
-    arcpy.management.CalculateGeometryAttributes(combined_places_simple, [['lon', 'POINT_X'], ['lat', 'POINT_Y']], coordinate_format='DD')
-        
+
+    #: Calculate lon/lat values for all points (in WGS84 coords)
+    lat_calc = f'arcpy.PointGeometry(!Shape!.centroid, !Shape!.spatialReference).projectAs(arcpy.SpatialReference(4326)).centroid.Y'
+    lon_calc = f'arcpy.PointGeometry(!Shape!.centroid, !Shape!.spatialReference).projectAs(arcpy.SpatialReference(4326)).centroid.X'
+
+    arcpy.CalculateField_management(combined_places_simple, 'lat', lat_calc, "PYTHON3")
+    arcpy.CalculateField_management(combined_places_simple, 'lon', lon_calc, "PYTHON3")
+
     print("Time elapsed calculating fields: {:.2f}s".format(time.time() - calc_time))
 
 
