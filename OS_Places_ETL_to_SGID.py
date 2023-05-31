@@ -10,14 +10,15 @@ Script to download OSM data and ETL into Open Source Places schema for SGID
 
 import os
 import time
-import zipfile
-import wget
+
+from arcgis.features import GeoAccessor, GeoSeriesAccessor
 import arcpy
 from arcpy import metadata as md
-import requests
-import pandas as pd
 import numpy as np
-from arcgis.features import GeoAccessor, GeoSeriesAccessor
+import pandas as pd
+import requests
+import zipfile
+
 import credentials
 
 
@@ -118,9 +119,14 @@ def unzip(directory, file):
        
 #: Download data from OSM via Geofabrik
 def download_osm():
-    print(f"Downloading OSM data from {osm_url} ...")
-    osm_file = wget.download(osm_url, work_dir)
-    unzip(work_dir, osm_file)
+    print(f"Downloading OSM data from {osm_url} ...")  
+    r = requests.get(osm_url, stream=True)
+    local_filename = os.path.join(work_dir, 'utah-latest-free.shp.zip')
+    with open(local_filename, 'wb') as fd:
+        for chunk in r.iter_content(chunk_size=128):
+            fd.write(chunk)
+    
+    unzip(work_dir, local_filename)
 
 
 #: Create working geodatabase with today's date
@@ -635,23 +641,23 @@ def update_metadata():
 
 #: Call functions 
 download_osm()
-create_gdb()
-export_sgid()
-create_places()
-add_pofw()
-add_pofw_areas()
-add_transportation()
-add_buildings()
-add_attributes()
-remove_duplicates()
-add_addresses()
-calc_fields()
-final_numeric_check()
-print("Time elapsed before Overpass function: {:.2f}s".format(time.time() - start_time))
-add_overpass_fields()
-delete_files()
-update_sgid()
-update_metadata()
+# create_gdb()
+# export_sgid()
+# create_places()
+# add_pofw()
+# add_pofw_areas()
+# add_transportation()
+# add_buildings()
+# add_attributes()
+# remove_duplicates()
+# add_addresses()
+# calc_fields()
+# final_numeric_check()
+# print("Time elapsed before Overpass function: {:.2f}s".format(time.time() - start_time))
+# add_overpass_fields()
+# delete_files()
+# update_sgid()
+# update_metadata()
 
 
 #: Stop timer and print end time in UTC
