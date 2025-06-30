@@ -224,6 +224,62 @@ def insert_into_ev_chargers(row):
         insert_cursor.insertRow(values)
 
 
+def add_ev_chargers():
+    #: Function to build EV charger data and append into combined_places
+    #: Get EV charger data from Overpass query
+    print("Pulling additional data from Overpass API ...")
+    ev_query_string = 'http://overpass-api.de/api/interpreter?data=[out:json];area[name="Utah"]->.utah;(node["amenity"="charging_station"](area.utah);way["amenity"="charging_station"](area.utah);relation["amenity"="charging_station"](area.utah););out geom;out center;'
+    overpass_ev = get_overpass_df(ev_query_string)
+
+    overpass_ev_nodes = overpass_ev[overpass_ev['type'] == 'node']
+    overpass_ev_ways = overpass_ev[overpass_ev['type'] == 'way']
+
+    #: Identify rows where the 'center' column is NOT of type float
+    ev_mask = overpass_ev_ways['center'].apply(lambda x: not isinstance(x, float))
+
+    #: Select only the rows where the mask is True, calc lat/lon
+    temp_ev = overpass_ev_ways.loc[ev_mask]
+
+    temp_ev.loc[:, 'lat'] = temp_ev['center'].apply(lambda r: r['lat'] if isinstance(r, dict) and 'lat' in r else np.nan)
+    temp_ev.loc[:, 'lon'] = temp_ev['center'].apply(lambda r: r['lon'] if isinstance(r, dict) and 'lon' in r else np.nan)
+
+    #: Combine and node and way dfs and deduplicate
+    new_ev = pd.concat([overpass_ev_nodes, temp_ev])
+    nodup_ev = new_ev.drop_duplicates(subset=['id'])
+
+    #: Normalize the tags field (dictionary) into separate columns
+    print("Normalizing dataframe ...")
+    temp = pd.json_normalize(nodup_ev['tags'])
+    ev_all_tags = pd.concat([nodup_ev.drop('tags', axis=1), temp], axis=1)
+
+    #: Fill name field with brand, where name is null
+    mask_ev = ev_all_tags['name'].isnull()
+    ev_all_tags.loc[mask_ev, 'name'] = ev_all_tags['brand']
+
+    #: Recalculate Mask and calculate generic "EV Charger" where name is null
+    mask_ev = ev_all_tags['name'].isnull()
+    ev_all_tags.loc[mask_ev, 'name'] = 'EV Charger'
+
+    #: Calculate additional columns to use in feature class
+    ev_all_tags['code'] = None
+    ev_all_tags['fclass'] = 'charging_station'
+
+    #: Build FC from opensource places  geofabrik schema
+    #: Copy combined_places_name_WGS84 feature class in ev_chargers FC
+    arcpy.management.CopyFeatures(combined_places_WGS84, os.path.join(today_db, ev_chargers_name))
+
+    #: Truncate ev_chargers FC
+    arcpy.management.TruncateTable(ev_chargers)
+
+    #: Insert rows into ev_chargers FC
+    print('Adding points to EV Chargers feature class ...')
+    ev_all_tags.apply(insert_into_ev_chargers, axis=1)
+
+    #: Append ev_chargers FC into combined_places
+    print(f"Adding {arcpy.management.GetCount(ev_chargers)[0]} EV Chargers to combined_places")
+    arcpy.management.Append(ev_chargers, combined_places, "NO_TEST")
+
+
 def add_pofw():
     #: Add queried POFW into Geodatabase
     pofw_query = "name NOT IN ('', ' ')"
@@ -659,6 +715,7 @@ download_osm()
 create_gdb()
 export_sgid()
 create_places()
+add_ev_chargers()
 add_pofw()
 add_pofw_areas()
 add_transportation()
