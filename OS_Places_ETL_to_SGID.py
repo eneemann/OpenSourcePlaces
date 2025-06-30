@@ -89,6 +89,7 @@ transport_FC_name = 'Transport'
 transport_centroid_name = 'Transport_centroids'
 buildings_FC_name = 'Buildings'
 buildings_centroid_name = 'Building_centroids'
+ev_chargers_name = 'EV_chargers'
 
 combined_places_WGS84 = os.path.join(today_db, combined_places_name_WGS84)
 combined_places = os.path.join(today_db, combined_places_name)
@@ -102,6 +103,7 @@ transport_FC = os.path.join(today_db, transport_FC_name)
 transport_centroid = os.path.join(today_db, transport_centroid_name)
 buildings_FC = os.path.join(today_db, buildings_FC_name)
 buildings_centroid = os.path.join(today_db, buildings_centroid_name)
+ev_chargers = os.path.join(today_db, ev_chargers_name)
 combined_places_simple = os.path.join(today_db, 'OS_Places_simple')
 combined_places_final = os.path.join(today_db, 'OS_Places_final')
 
