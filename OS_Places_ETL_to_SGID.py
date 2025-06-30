@@ -211,6 +211,19 @@ def create_places():
     arcpy.management.Append(poi_areas_centroid, combined_places, "NO_TEST")
 
 
+def insert_into_ev_chargers(row):
+    #: Helper function to insert data from dataframe into feature class
+    spatial_reference = arcpy.SpatialReference(4326) #WGS84
+    point = arcpy.Point(float(row['lon']), float(row['lat']))
+    point_geometry = arcpy.PointGeometry(point, spatial_reference)
+    values = [point_geometry, row['id'], row['code'], row['fclass'], row['name']]
+    
+    #: Add point to FC
+    fields = ['SHAPE@', 'osm_id', 'code', 'fclass', 'name']
+    with arcpy.da.InsertCursor(ev_chargers, fields) as insert_cursor:
+        insert_cursor.insertRow(values)
+
+
 def add_pofw():
     #: Add queried POFW into Geodatabase
     pofw_query = "name NOT IN ('', ' ')"
