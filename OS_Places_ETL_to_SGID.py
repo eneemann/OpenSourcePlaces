@@ -139,6 +139,14 @@ def create_gdb():
     arcpy.env.qualifiedFieldNames = False
 
 
+#: Retrieve Overpass API data with requests, convert to dataframe
+def get_overpass_df(query_string):
+    r = requests.get(query_string)
+    df = pd.DataFrame(r.json()['elements'])
+
+    return df
+
+
 #: Copy SGID data layers to local for faster processing
 #: This seems to be a little faster than hitting the internal SGID for point-in-polygon analyses
 def export_sgid():
@@ -518,14 +526,6 @@ def delete_files():
         if file.endswith(".zip"):
             print(f"Deleting {file} ...")
             os.remove(os.path.join(work_dir, file))
-    
-
-#: Retrieve Overpass API data with requests, convert to dataframe
-def get_overpass_df(query_string):
-    r = requests.get(query_string)
-    df = pd.DataFrame(r.json()['elements'])
-
-    return df
 
 
 #: Function to calculater full OSM address
