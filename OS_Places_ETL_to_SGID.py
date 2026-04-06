@@ -167,13 +167,14 @@ def create_places():
     #: Add queried POIs into Geodatabase   
     poi_query = """name NOT IN ('', ' ') AND (fclass IN ('archaeological', 'arts_centre', 
     'attraction', 'bank', 'bakery', 'bar', 'beverages', 'butcher', 'cafe', 'camp_site', 
-    'car_dealership', 'car_wash', 'caravan_site', 'chemist', 'cinema', 'clothes', 'college', 'convenience', 
-    'courthouse', 'dentist', 'doctors', 'doityourself', 'embassy', 'fast_food', 'fire_station', 'florist', 
-    'garden_centre', 'general', 'greengrocer', 'guesthouse', 'hairdresser', 'hospital', 'hostel', 'hotel', 
+    'car_dealership', 'car_wash', 'caravan_site', 'chalet', 'chemist', 'cinema', 'clothes', 'college', 'convenience', 
+    'courthouse', 'dentist', 'doctors', 'dog_park', 'doityourself', 'embassy', 'fast_food', 'fire_station', 'florist', 'food_court',
+    'garden_centre', 'general', 'greengrocer', 'guesthouse', 'hairdresser', 'hospital', 'hostel', 'hotel', 'ice_rink',
     'jeweller', 'kindergarten', 'laundry', 'library', 'mall', 'market_place', 'massage', 'memorial', 'monument', 
     'motel', 'museum', 'nightclub', 'nursing_home', 'optician', 'park', 'pharmacy', 'picnic_site', 'post_office',
-    'police', 'pub', 'restaurant', 'ruins', 'school', 'stationery', 'supermarket', 'swimming_pool', 'theatre', 
-    'tourist_info', 'tower', 'town_hall', 'travel_agent', 'university', 'vending_any', 'veterinary', 'viewpoint', 'zoo') 
+    'police', 'prison', 'pub', 'public_bookcase', 'recycling', 'restaurant', 'ruins', 'school', 'stationery', 'supermarket', 'swimming_pool',
+    'theatre', 'theme_park', 'tourist_info', 'tower', 'town_hall', 'travel_agent', 'university', 'vending_any',
+    'veterinary', 'viewpoint', 'water_works', 'zoo') 
     OR fclass LIKE '%shop%' OR fclass LIKE '%store%' OR fclass LIKE '%rental%' OR fclass LIKE '%centre%')"""
         
     arcpy.conversion.FeatureClassToFeatureClass(pois, today_db, pois_FC_name, poi_query)
@@ -188,14 +189,14 @@ def create_places():
     #: Add queried POI Areas into Geodatabase
     poi_areas_query = """name NOT IN ('', ' ') AND (fclass IN ('archaeological', 'arts_centre', 
     'attraction', 'bank', 'bakery', 'bar', 'beverages', 'butcher', 'cafe', 'camp_site', 'car_dealership', 
-    'car_wash', 'caravan_site', 'chemist', 'cinema', 'clothes', 'college', 'convenience', 'courthouse', 'dentist', 
-    'doctors', 'doityourself', 'embassy', 'fast_food', 'fire_station', 'florist', 'garden_centre', 'general', 
-    'greengrocer', 'guesthouse', 'hairdresser', 'graveyard', 'hospital', 'hostel', 'hotel', 'jeweller', 
+    'car_wash', 'caravan_site', 'chalet', 'chemist', 'cinema', 'clothes', 'college', 'convenience', 'courthouse', 'dentist', 
+    'doctors', 'dog_park', 'doityourself', 'embassy', 'fast_food', 'fire_station', 'florist', 'food_court', 'garden_centre', 'general', 
+    'greengrocer', 'guesthouse', 'hairdresser', 'graveyard', 'hospital', 'hostel', 'hotel', 'ice_rink', 'jeweller', 
     'kindergarten', 'laundry', 'library', 'mall', 'market_place', 'massage', 'memorial', 'monument', 'motel', 
     'museum', 'nightclub', 'nursing_home', 'optician', 'park', 'playground', 'pharmacy', 'picnic_site', 
-    'post_office', 'police', 'pub', 'restaurant', 'ruins', 'school', 'shelter', 'stadium', 'stationery', 
-    'supermarket', 'swimming_pool', 'theatre', 'tourist_info', 'tower', 'town_hall', 'travel_agent', 'university', 
-    'vending_any', 'veterinary', 'viewpoint', 'zoo') OR fclass LIKE '%shop%' OR fclass LIKE '%store%' OR fclass LIKE 
+    'post_office', 'police', 'prison', 'pub', 'recycling', 'restaurant', 'ruins', 'school', 'shelter', 'stadium', 'stationery', 
+    'supermarket', 'swimming_pool', 'theatre', 'theme_park', 'tourist_info', 'tower', 'town_hall', 'travel_agent', 'university', 
+    'vending_any', 'veterinary', 'viewpoint', 'water_works', 'zoo') OR fclass LIKE '%shop%' OR fclass LIKE '%store%' OR fclass LIKE 
     '%rental%' OR fclass LIKE '%centre%' OR (fclass = 'golf_course' AND name NOT IN ('', ' ') AND 
     name NOT LIKE '%Hole%' AND name NOT LIKE '%hole%'))"""
     
